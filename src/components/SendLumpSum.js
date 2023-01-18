@@ -2,6 +2,10 @@ import React, { useEffect, useState } from "react";
 import { FormControl, MenuItem, Select } from "@mui/material";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAccount } from "wagmi";
+import { ethers } from "ethers";
+import { Framework } from "@superfluid-finance/sdk-core";
+import MoneyRouterABI from "../artifacts/MoneyRouter.json"
+const moneyRouterAddress = "0x3b05Df0482457891d48406736516679EE7B3a88c"
 
 function SendLumpSum() {
   const [indexValue, setIndexValue] = useState("");
@@ -13,6 +17,64 @@ function SendLumpSum() {
 
   const [loadingAnim, setLoadingAnim] = useState(false);
   const [btnContent, setBtnContent] = useState("Send Token");
+
+  const sendLumpsum = async () => {
+    try {
+      const { ethereum } = window;
+      if (ethereum) {
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const signer = provider.getSigner();
+
+        const sf = await Framework.create({
+          chainId: 5,
+          provider: provider,
+        });
+
+        const daix = await sf.loadSuperToken("fDAIx")
+
+        const allowence = await daix.allowance({
+          owner: "0x217155AF8592b6b8fc6AdE9Dd9304197d8a11d12",
+          spender: "0x3b05Df0482457891d48406736516679EE7B3a88c",
+          providerOrSigner: signer
+        });
+        const amount = document.getElementById('amount').value
+        const convertedAmount = amount * 10 ** 18
+        console.log(allowence)
+        if (convertedAmount > allowence) {
+          const amountToApprove = convertedAmount - allowence
+          const moneyRouterApproval = daix.approve({
+            receiver: moneyRouterAddress,
+            amount: ethers.utils.parseEther(String(amountToApprove))
+          })
+          await moneyRouterApproval.exec(signer).then(function (tx) {
+            console.log(`
+                Congrats! You've just successfully approved the money router contract. 
+                Tx Hash: ${tx.hash}
+            `)
+          })
+        } else {
+          const moneyRouter = new ethers.Contract(
+            moneyRouterAddress,
+            MoneyRouterABI,
+            signer
+          )
+          //call money router send lump sum method from signers[0]
+          await moneyRouter
+            .connect(signer)
+            .sendLumpSumToContract(daix.address, ethers.utils.parseEther(String(amount)))
+            .then(function (tx) {
+              console.log(`
+              Congrats! You just successfully sent funds to the money router contract. 
+              Tx Hash: ${tx.hash}
+          `)
+            })
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
 
   return (
     <div className="db-main">
@@ -36,9 +98,9 @@ function SendLumpSum() {
                 fontSize: "1rem",
                 padding: "0px 5px",
                 ".css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.MuiSelect-select":
-                  {
-                    minHeight: "auto",
-                  },
+                {
+                  minHeight: "auto",
+                },
                 ".MuiOutlinedInput-notchedOutline": {
                   borderColor: "rgb(224, 224, 224)",
                   boxShadow: "rgba(204, 204, 204, 0.25) 0px 0px 6px 3px",
@@ -69,16 +131,17 @@ function SendLumpSum() {
           {/* <h3>Subscriber Address</h3> */}
           <div className="subscriber-input-div">
             <input
+              id="amount"
               type="text"
               className="subscriber-input-index"
-              placeholder="Subscriber Address"
+              placeholder="amount"
             />
           </div>
           {/* <h3>Unit</h3> */}
 
           <div className="subscriber-add-btn">
             {isConnected ? (
-              <button className="action-btn">
+              <button className="action-btn" onClick={() => sendLumpsum()}>
                 {loadingAnim ? <span className="loader"></span> : btnContent}
               </button>
             ) : (
