@@ -2,6 +2,10 @@ import React, { useEffect, useState } from "react";
 import { FormControl, MenuItem, Select } from "@mui/material";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAccount } from "wagmi";
+import { ethers } from "ethers";
+import { Framework } from "@superfluid-finance/sdk-core";
+import MoneyRouterABI from "../artifacts/MoneyRouter.json"
+const moneyRouterAddress = "0x3b05Df0482457891d48406736516679EE7B3a88c"
 
 function DeleteFFC() {
   const [indexValue, setIndexValue] = useState("");
@@ -13,6 +17,45 @@ function DeleteFFC() {
 
   const [loadingAnim, setLoadingAnim] = useState(false);
   const [btnContent, setBtnContent] = useState("Delete Flow");
+
+  const deleteFlowFromContract = async () => {
+    try {
+      const { ethereum } = window;
+      if (ethereum) {
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const signer = provider.getSigner();
+
+        const sf = await Framework.create({
+          chainId: 5,
+          provider: provider,
+        });
+
+        const daix = await sf.loadSuperToken("fDAIx")
+        const moneyRouter = new ethers.Contract(
+          moneyRouterAddress,
+          MoneyRouterABI,
+          signer
+        )
+
+        const receiver = document.getElementById('receiver').value
+        //call money router create flow into contract method from signers[0]
+        //this flow rate is ~1000 tokens/month
+        await moneyRouter
+          .connect(signer)
+          .deleteFlowFromContract(daix.address, receiver)
+          .then(function (tx) {
+            console.log(`
+            Congrats! You just successfully deleted a flow from the money router contract. 
+            Tx Hash: ${tx.hash}
+        `)
+          })
+
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   return (
     <div className="db-sub">
       <h1>Delete Flow From Contract</h1>
@@ -33,9 +76,9 @@ function DeleteFFC() {
               fontSize: "1rem",
               padding: "0px 5px",
               ".css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.MuiSelect-select":
-                {
-                  minHeight: "auto",
-                },
+              {
+                minHeight: "auto",
+              },
               ".MuiOutlinedInput-notchedOutline": {
                 borderColor: "rgb(224, 224, 224)",
                 boxShadow: "rgba(204, 204, 204, 0.25) 0px 0px 6px 3px",
@@ -66,6 +109,7 @@ function DeleteFFC() {
         {/* <h3>Subscriber Address</h3> */}
         <div className="subscriber-input-div">
           <input
+            id="receiver"
             type="text"
             className="subscriber-input-index"
             placeholder="Reciever's Public Address"
@@ -75,7 +119,7 @@ function DeleteFFC() {
 
         <div className="subscriber-add-btn">
           {isConnected ? (
-            <button className="action-btn">
+            <button className="action-btn" onClick={() => deleteFlowFromContract()}>
               {loadingAnim ? <span className="loader"></span> : btnContent}
             </button>
           ) : (
