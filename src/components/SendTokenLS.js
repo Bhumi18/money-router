@@ -31,15 +31,22 @@ function SendTokenLS() {
         });
 
         const daix = await sf.loadSuperToken("fDAIx");
+        const moneyRouter = new ethers.Contract(
+          moneyRouterAddress,
+          MoneyRouterABI,
+          signer
+        );
 
+        // checking allowance rate
         const allowence = await daix.allowance({
-          owner: "0x217155AF8592b6b8fc6AdE9Dd9304197d8a11d12",
-          spender: "0x3b05Df0482457891d48406736516679EE7B3a88c",
+          owner: address,
+          spender: moneyRouterAddress,
           providerOrSigner: signer,
         });
         const amount = document.getElementById("amount").value;
         const convertedAmount = amount * 10 ** 18;
-        console.log(allowence);
+
+        // condition for approval
         if (convertedAmount > allowence) {
           const amountToApprove = convertedAmount - allowence;
           const moneyRouterApproval = daix.approve({
@@ -52,13 +59,22 @@ function SendTokenLS() {
                   Tx Hash: ${tx.hash}
               `);
           });
+
+          //call money router send lump sum method from signer
+          await moneyRouter
+            .connect(signer)
+            .sendLumpSumToContract(
+              daix.address,
+              ethers.utils.parseEther(String(amount))
+            )
+            .then(function (tx) {
+              console.log(`
+                Congrats! You just successfully sent funds to the money router contract. 
+                Tx Hash: ${tx.hash}
+            `);
+            });
         } else {
-          const moneyRouter = new ethers.Contract(
-            moneyRouterAddress,
-            MoneyRouterABI,
-            signer
-          );
-          //call money router send lump sum method from signers[0]
+          //call money router send lump sum method from signer
           await moneyRouter
             .connect(signer)
             .sendLumpSumToContract(
@@ -98,9 +114,9 @@ function SendTokenLS() {
               fontSize: "1rem",
               padding: "0px 5px",
               ".css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.MuiSelect-select":
-                {
-                  minHeight: "auto",
-                },
+              {
+                minHeight: "auto",
+              },
               ".MuiOutlinedInput-notchedOutline": {
                 borderColor: "rgb(224, 224, 224)",
                 boxShadow: "rgba(204, 204, 204, 0.25) 0px 0px 6px 3px",
