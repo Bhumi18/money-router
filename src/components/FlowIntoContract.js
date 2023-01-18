@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import CreateFIC from "./CreateFIC";
 import DeleteFIC from "./DeleteFIC";
 import UpdateFIC from "./UpdateFIC";
+import ViewAllIntoContract from "./ViewAllIntoContract";
 
 import "../styles/dashboard.scss";
 import "../styles/subscriber.scss";
@@ -10,6 +11,7 @@ function FlowIntoContract() {
   const [showCreateFlow, setCreateFlow] = useState(true);
   const [showUpdateFlow, setUpdateFlow] = useState(false);
   const [showDeleteFlow, setDeleteFlow] = useState(false);
+  const [showViewFlow, setViewFlow] = useState(false);
 
   return (
     <div className="db-main">
@@ -24,6 +26,7 @@ function FlowIntoContract() {
             setCreateFlow(true);
             setUpdateFlow(false);
             setDeleteFlow(false);
+            setViewFlow(false);
           }}
         >
           Create
@@ -38,6 +41,7 @@ function FlowIntoContract() {
             setCreateFlow(false);
             setUpdateFlow(true);
             setDeleteFlow(false);
+            setViewFlow(false);
           }}
         >
           Update
@@ -52,9 +56,25 @@ function FlowIntoContract() {
             setCreateFlow(false);
             setUpdateFlow(false);
             setDeleteFlow(true);
+            setViewFlow(false);
           }}
         >
           Delete
+        </button>
+        <button
+          className={
+            showViewFlow
+              ? "subscriber-header-btn active"
+              : "subscriber-header-btn"
+          }
+          onClick={() => {
+            setCreateFlow(false);
+            setUpdateFlow(false);
+            setDeleteFlow(false);
+            setViewFlow(true);
+          }}
+        >
+          View All
         </button>
       </div>
       {showCreateFlow ? (
@@ -63,6 +83,8 @@ function FlowIntoContract() {
         <UpdateFIC />
       ) : showDeleteFlow ? (
         <DeleteFIC />
+      ) : showViewFlow ? (
+        <ViewAllIntoContract />
       ) : null}
     </div>
   );

@@ -126,6 +126,32 @@
     }
   }
 }
+.view-all {
+  max-width: 100%;
+  width: 90%;
+
+  table {
+    th {
+      text-align: left;
+      display: table-cell;
+      vertical-align: inherit;
+      border-bottom: 1px solid rgb(224, 224, 224);
+      text-align: left;
+      font-size: 0.875rem;
+      font-weight: 500;
+      letter-spacing: 0.17px;
+      line-height: 1.329;
+      color: rgba(18, 20, 30, 0.6);
+      padding: 10px 32px;
+      min-height: 0px;
+    }
+    td {
+      text-align: center;
+      padding: 10px 0px;
+      border-bottom: 1px solid #f3f4f6;
+    }
+  }
+}
 .subscriber-add-box-table {
   width: 100%;
   max-width: 1000px;

@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import CreateFFC from "./CreateFFC";
 import DeleteFFC from "./DeleteFFC";
 import UpdateFFC from "./UpdateFFC";
-import Withdraw from "./Withdraw";
 
 import "../styles/dashboard.scss";
 import "../styles/subscriber.scss";
