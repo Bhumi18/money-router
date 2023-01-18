@@ -11,7 +11,7 @@ function FlowFromContract() {
   const [showCreateFlow, setCreateFlow] = useState(true);
   const [showUpdateFlow, setUpdateFlow] = useState(false);
   const [showDeleteFlow, setDeleteFlow] = useState(false);
-  const [showWithdraw, setWithdraw] = useState(false);
+  // const [showWithdraw, setWithdraw] = useState(false);
 
   return (
     <div className="db-main">
@@ -26,7 +26,6 @@ function FlowFromContract() {
             setCreateFlow(true);
             setUpdateFlow(false);
             setDeleteFlow(false);
-            setWithdraw(false);
           }}
         >
           Create
@@ -41,7 +40,6 @@ function FlowFromContract() {
             setCreateFlow(false);
             setUpdateFlow(true);
             setDeleteFlow(false);
-            setWithdraw(false);
           }}
         >
           Update
@@ -56,25 +54,9 @@ function FlowFromContract() {
             setCreateFlow(false);
             setUpdateFlow(false);
             setDeleteFlow(true);
-            setWithdraw(false);
           }}
         >
           Delete
-        </button>
-        <button
-          className={
-            showWithdraw
-              ? "subscriber-header-btn active"
-              : "subscriber-header-btn"
-          }
-          onClick={() => {
-            setCreateFlow(false);
-            setUpdateFlow(false);
-            setDeleteFlow(false);
-            setWithdraw(true);
-          }}
-        >
-          Withdraw
         </button>
       </div>
       {showCreateFlow ? (
@@ -83,8 +65,6 @@ function FlowFromContract() {
         <UpdateFFC />
       ) : showDeleteFlow ? (
         <DeleteFFC />
-      ) : showWithdraw ? (
-        <Withdraw />
       ) : null}
     </div>
   );

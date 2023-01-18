@@ -1,22 +1,86 @@
 import React, { useEffect, useState } from "react";
 import { FormControl, MenuItem, Select } from "@mui/material";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { useAccount, useNetwork } from "wagmi";
+import { useAccount } from "wagmi";
+import { ethers } from "ethers";
+import { Framework } from "@superfluid-finance/sdk-core";
+import MoneyRouterABI from "../artifacts/MoneyRouter.json";
+const moneyRouterAddress = "0x3b05Df0482457891d48406736516679EE7B3a88c";
 
-function Withdraw() {
+function SendTokenLS() {
   const [indexValue, setIndexValue] = useState("");
   const { address, isConnected } = useAccount();
-  const { chain, chains } = useNetwork();
-  console.log(chain.name);
+
   const handleChange = (e) => {
     setIndexValue(e.target.value);
   };
 
   const [loadingAnim, setLoadingAnim] = useState(false);
-  const [btnContent, setBtnContent] = useState("Withdraw");
+  const [btnContent, setBtnContent] = useState("Send Token");
+
+  const sendLumpsum = async () => {
+    try {
+      const { ethereum } = window;
+      if (ethereum) {
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const signer = provider.getSigner();
+
+        const sf = await Framework.create({
+          chainId: 5,
+          provider: provider,
+        });
+
+        const daix = await sf.loadSuperToken("fDAIx");
+
+        const allowence = await daix.allowance({
+          owner: "0x217155AF8592b6b8fc6AdE9Dd9304197d8a11d12",
+          spender: "0x3b05Df0482457891d48406736516679EE7B3a88c",
+          providerOrSigner: signer,
+        });
+        const amount = document.getElementById("amount").value;
+        const convertedAmount = amount * 10 ** 18;
+        console.log(allowence);
+        if (convertedAmount > allowence) {
+          const amountToApprove = convertedAmount - allowence;
+          const moneyRouterApproval = daix.approve({
+            receiver: moneyRouterAddress,
+            amount: ethers.utils.parseEther(String(amountToApprove)),
+          });
+          await moneyRouterApproval.exec(signer).then(function (tx) {
+            console.log(`
+                  Congrats! You've just successfully approved the money router contract. 
+                  Tx Hash: ${tx.hash}
+              `);
+          });
+        } else {
+          const moneyRouter = new ethers.Contract(
+            moneyRouterAddress,
+            MoneyRouterABI,
+            signer
+          );
+          //call money router send lump sum method from signers[0]
+          await moneyRouter
+            .connect(signer)
+            .sendLumpSumToContract(
+              daix.address,
+              ethers.utils.parseEther(String(amount))
+            )
+            .then(function (tx) {
+              console.log(`
+                Congrats! You just successfully sent funds to the money router contract. 
+                Tx Hash: ${tx.hash}
+            `);
+            });
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className="db-sub">
-      <h1>Withdraw Token From Contract</h1>
+      <h1>Send Token Into Contract</h1>
       <p>
         Lorem ipsum dolor sit, amet consectetur adipisicing elit. Beatae, rerum.
       </p>
@@ -67,6 +131,7 @@ function Withdraw() {
         {/* <h3>Subscriber Address</h3> */}
         <div className="subscriber-input-div">
           <input
+            id="amount"
             type="number"
             className="subscriber-input-index"
             placeholder="Amount"
@@ -76,7 +141,7 @@ function Withdraw() {
 
         <div className="subscriber-add-btn">
           {isConnected ? (
-            <button className="action-btn">
+            <button className="action-btn" onClick={() => sendLumpsum()}>
               {loadingAnim ? <span className="loader"></span> : btnContent}
             </button>
           ) : (
@@ -99,4 +164,4 @@ function Withdraw() {
   );
 }
 
-export default Withdraw;
+export default SendTokenLS;
