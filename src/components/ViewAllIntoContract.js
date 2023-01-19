@@ -1,5 +1,5 @@
 import React from "react";
-import { useAccount, useNetwork } from "wagmi";
+import { useAccount } from "wagmi";
 import { createClient } from "urql";
 import { ethers } from "ethers";
 import { Framework } from "@superfluid-finance/sdk-core";
@@ -61,11 +61,11 @@ function ViewAllIntoContract() {
             String(converted.getMonth()+1) +
             "/" +
             String(converted.getFullYear());
-          if (!data.find((item) => finalData[i].timestamp === item[1])) {
+          if (!data.find((item) => finalData[i].timestamp === item[3])) {
             if (i === 0) {
-              data.push([finalData[i].flowRate, date, active])
+              data.push([finalData[i].flowRate, date, active,finalData[i].timestamp])
             } else {
-              data.push([finalData[i].flowRate, date, "Not Active"])
+              data.push([finalData[i].flowRate, date, "Not Active",finalData[i].timestamp])
             }
           }
 
