@@ -16,7 +16,7 @@ function ViewAllIntoContract() {
     const data_ = `
     query {
       flowUpdatedEvents(
-        where: {receiver: "0x3b05df0482457891d48406736516679ee7b3a88c", sender: "${address}"}
+        where: {receiver: "0x563a2ED0F4c430FD4A94D9C08a3fB08635C23eFE", sender: "${address}"}
         orderBy: timestamp
       ) {
         timestamp
@@ -42,7 +42,7 @@ function ViewAllIntoContract() {
         const daix = await sf.loadSuperToken("fDAIx");
         const response = await daix.getFlow({
           sender: address,
-          receiver: "0x3b05Df0482457891d48406736516679EE7B3a88c",
+          receiver: "0x563a2ED0F4c430FD4A94D9C08a3fB08635C23eFE",
           providerOrSigner: signer
         });
         let active

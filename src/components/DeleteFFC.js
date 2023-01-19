@@ -5,7 +5,7 @@ import { useAccount } from "wagmi";
 import { ethers } from "ethers";
 import { Framework } from "@superfluid-finance/sdk-core";
 import MoneyRouterABI from "../artifacts/MoneyRouter.json"
-const moneyRouterAddress = "0x3b05Df0482457891d48406736516679EE7B3a88c"
+const moneyRouterAddress = "0x563a2ED0F4c430FD4A94D9C08a3fB08635C23eFE"
 
 function DeleteFFC() {
   const [indexValue, setIndexValue] = useState("");

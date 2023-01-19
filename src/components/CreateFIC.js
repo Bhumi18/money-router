@@ -5,7 +5,7 @@ import { useAccount } from "wagmi";
 import { ethers } from "ethers";
 import { Framework } from "@superfluid-finance/sdk-core";
 import MoneyRouterABI from "../artifacts/MoneyRouter.json"
-const moneyRouterAddress = "0x3b05Df0482457891d48406736516679EE7B3a88c"
+const moneyRouterAddress = "0x563a2ED0F4c430FD4A94D9C08a3fB08635C23eFE"
 
 function CreateFIC() {
   const [indexValue, setIndexValue] = useState("");
@@ -36,7 +36,7 @@ function CreateFIC() {
           MoneyRouterABI,
           signer
         )
-        
+
         // check permission data
         const isAuthorized = await daix.getFlowOperatorData({
           sender: address,
@@ -46,7 +46,8 @@ function CreateFIC() {
         })
         const permission = (isAuthorized.permissions)
         const flow = document.getElementById('flow').value
-
+        console.log(permission)
+        console.log(typeof permission)
         // condition for authorization
         if (permission === String(0)) {
           //  approve contract to spend 1000 daix
@@ -71,6 +72,8 @@ function CreateFIC() {
           `)
             })
         } else {
+          // const tx = await moneyRouter.createFlowIntoContract(daix.address, flow)
+          // tx.wait()
           await moneyRouter
             .connect(signer)
             .createFlowIntoContract(daix.address, flow)
