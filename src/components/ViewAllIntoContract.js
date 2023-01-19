@@ -87,7 +87,7 @@ function ViewAllIntoContract() {
       <div className="db-sub">
         <h1>All streams</h1>
         <p>
-          Lorem ipsum dolor sit, amet consectetur adipisicing elit. Beatae, rerum.
+        View all streams in the contract.
         </p>
         <div className="subscriber-add-box view-all">
           {/* <h3>Subscriber Address</h3> */}

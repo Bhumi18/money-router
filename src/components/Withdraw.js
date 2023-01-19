@@ -59,7 +59,7 @@ function Withdraw() {
     <div className="db-sub">
       <h1>Withdraw Token From Contract</h1>
       <p>
-        Lorem ipsum dolor sit, amet consectetur adipisicing elit. Beatae, rerum.
+      Withdraw tokens from the contract.
       </p>
       <div className="subscriber-add-box">
         <FormControl required fullWidth>

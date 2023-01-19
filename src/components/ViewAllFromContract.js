@@ -30,7 +30,6 @@ function ViewAllFromContract() {
     });
     const result1 = await c.query(data_).toPromise();
     const finalData = (result1.data.flowUpdatedEvents)
-    console.log(finalData)
     try {
       const { ethereum } = window;
       if (ethereum) {
@@ -57,7 +56,6 @@ function ViewAllFromContract() {
           else {
             active = "Active"
           }
-          console.log(response)
           const converted = new Date(parseInt(finalData[i].timestamp) * 1000);
           const date =
             String(converted.getDate()) +
@@ -90,7 +88,7 @@ function ViewAllFromContract() {
       <div className="db-sub">
         <h1>All streams</h1>
         <p>
-          Lorem ipsum dolor sit, amet consectetur adipisicing elit. Beatae, rerum.
+        View all streams from the contract.
         </p>
         <div className="subscriber-add-box view-all">
           {/* <h3>Subscriber Address</h3> */}

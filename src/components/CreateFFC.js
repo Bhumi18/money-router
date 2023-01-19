@@ -59,9 +59,9 @@ function CreateFFC() {
 
   return (
     <div className="db-sub">
-      <h1>Create Flow From Contract</h1>
+      <h1>Create Flow</h1>
       <p>
-        Lorem ipsum dolor sit, amet consectetur adipisicing elit. Beatae, rerum.
+        Create a flow from the contract.
       </p>
       <div className="subscriber-add-box">
         <FormControl required fullWidth>

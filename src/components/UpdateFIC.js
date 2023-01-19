@@ -58,9 +58,9 @@ function UpdateFIC() {
 
   return (
     <div className="db-sub">
-      <h1>Update Flow Into Contract</h1>
+      <h1>Update Flow</h1>
       <p>
-        Lorem ipsum dolor sit, amet consectetur adipisicing elit. Beatae, rerum.
+      Update the flow in the contract.
       </p>
       <div className="subscriber-add-box">
         <FormControl required fullWidth>

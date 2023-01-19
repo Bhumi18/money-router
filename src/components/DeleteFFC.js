@@ -58,9 +58,9 @@ function DeleteFFC() {
 
   return (
     <div className="db-sub">
-      <h1>Delete Flow From Contract</h1>
+      <h1>Delete Flow</h1>
       <p>
-        Lorem ipsum dolor sit, amet consectetur adipisicing elit. Beatae, rerum.
+      Delete the flow from the contract.
       </p>
       <div className="subscriber-add-box">
         <FormControl required fullWidth>
