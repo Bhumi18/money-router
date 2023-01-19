@@ -7,8 +7,8 @@ import { useEffect, useState } from "react";
 
 function ViewAllIntoContract() {
   const { address, isConnected } = useAccount();
-  const [data, setData] = useState([])
-  const [loading, setLoading] = useState(false)
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
   const getData = async () => {
     const API =
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-goerli";
@@ -28,7 +28,7 @@ function ViewAllIntoContract() {
       url: API,
     });
     const result1 = await c.query(data_).toPromise();
-    const finalData = (result1.data.flowUpdatedEvents)
+    const finalData = result1.data.flowUpdatedEvents;
     try {
       const { ethereum } = window;
       if (ethereum) {
@@ -43,14 +43,17 @@ function ViewAllIntoContract() {
         const response = await daix.getFlow({
           sender: address,
           receiver: "0x563a2ED0F4c430FD4A94D9C08a3fB08635C23eFE",
-          providerOrSigner: signer
+          providerOrSigner: signer,
         });
-        let active
-        if (response.deposit === '0' && response.owedDeposit === '0' && response.flowRate === '0') {
-          active = "Not Active"
-        }
-        else {
-          active = "Active"
+        let active;
+        if (
+          response.deposit === "0" &&
+          response.owedDeposit === "0" &&
+          response.flowRate === "0"
+        ) {
+          active = "Not Active";
+        } else {
+          active = "Active";
         }
         // loop over query response
         for (let i = 0; i < finalData.length; i++) {
@@ -58,27 +61,34 @@ function ViewAllIntoContract() {
           const date =
             String(converted.getDate()) +
             "/" +
-            String(converted.getMonth()+1) +
+            String(converted.getMonth() + 1) +
             "/" +
             String(converted.getFullYear());
           if (!data.find((item) => finalData[i].timestamp === item[3])) {
             if (i === 0) {
-              data.push([finalData[i].flowRate, date, active,finalData[i].timestamp])
+              data.push([
+                finalData[i].flowRate,
+                date,
+                active,
+                finalData[i].timestamp,
+              ]);
             } else {
-              data.push([finalData[i].flowRate, date, "Not Active",finalData[i].timestamp])
+              data.push([
+                finalData[i].flowRate,
+                date,
+                "Not Active",
+                finalData[i].timestamp,
+              ]);
             }
           }
-
         }
-        setData(data)
-        setLoading(true)
+        setData(data);
+        setLoading(true);
       }
     } catch (error) {
       console.log(error);
     }
-
-
-  }
+  };
   useEffect(() => {
     getData();
   });
@@ -86,9 +96,7 @@ function ViewAllIntoContract() {
     return (
       <div className="db-sub">
         <h1>All streams</h1>
-        <p>
-        View all streams in the contract.
-        </p>
+        <p>View all streams in the contract.</p>
         <div className="subscriber-add-box view-all">
           {/* <h3>Subscriber Address</h3> */}
           <table>
@@ -102,19 +110,16 @@ function ViewAllIntoContract() {
             </thead>
             <tbody>
               {data.length > 0
-                ?
-                data.map((item, key) => {
-                  return (
-                    <tr>
-                      <td>{address}</td>
-                      <td>{item[0]}</td>
-                      <td>{item[1]}</td>
-                      <td>{item[2]}</td>
-                    </tr>
-                  )
-
-                })
-
+                ? data.map((item, key) => {
+                    return item[0] !== "0" ? (
+                      <tr key={key}>
+                        <td>{address}</td>
+                        <td>{item[0]}</td>
+                        <td>{item[1]}</td>
+                        <td>{item[2]}</td>
+                      </tr>
+                    ) : null;
+                  })
                 : null}
             </tbody>
           </table>
@@ -123,7 +128,7 @@ function ViewAllIntoContract() {
       </div>
     );
   } else {
-    return "loading"
+    return "loading";
   }
 }
 export default ViewAllIntoContract;
