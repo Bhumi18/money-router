@@ -227,42 +227,37 @@ function Dashboard() {
               sx={{ bgcolor: "grey.100" }}
             />
           ) : (
-            "Instant Distribution Agreement"
+            "Money Router"
           )}
         </h1>
-        <p>Connect your wallet</p>
+        <p></p>
         <div className="db-grid-sub">
           {loading ? (
             <Skeleton animation="wave" variant="rounded" height={"100%"} />
           ) : (
             <div className="grid-sub">
-              <span className="grid-sub-title">Create IDA Index</span>
+              <span className="grid-sub-title">Send a lump sum</span>
               <span className="grid-sub-info">
-                A channel made by a publisher account to distribute Super Tokens
-                to any amount of receivers on a proportional basis
+              Send and withdraw lump sums of tokens into and from the contract.
               </span>
             </div>
           )}
           <div className="grid-sub">
-            <span className="grid-sub-title">Add Subscribers</span>
+            <span className="grid-sub-title">Send a stream into the contract</span>
             <span className="grid-sub-info">
-              The receivers. Accounts that are given units to an IDA index and
-              are able to receive Super Tokens distributed through it.
+            Choose a token, enter a flow rate, and stream it into the contract.
             </span>
           </div>
           <div className="grid-sub">
-            <span className="grid-sub-title">Set Units for Subscribers</span>
+            <span className="grid-sub-title">Send a stream from the contract</span>
             <span className="grid-sub-info">
-              Receivers get Super Tokens sent through the IDA index in
-              proportion to the units issued to them divided by total units
-              issued for the index.
+            Choose a token, enter a flow rate and recipient, and stream it from the contract.
             </span>
           </div>
           <div className="grid-sub">
-            <span className="grid-sub-title">Distribute Tokens</span>
+            <span className="grid-sub-title">Update and Delete streams</span>
             <span className="grid-sub-info">
-              Takes the specified amount of Super Tokens from the sender's
-              account and distributes them to all receivers.
+            Update and delete streams into and from the contract.
             </span>
           </div>
         </div>
