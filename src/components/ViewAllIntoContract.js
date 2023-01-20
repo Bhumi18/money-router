@@ -4,6 +4,7 @@ import { createClient } from "urql";
 import { ethers } from "ethers";
 import { Framework } from "@superfluid-finance/sdk-core";
 import { useEffect, useState } from "react";
+import { Skeleton } from "@mui/material";
 
 function ViewAllIntoContract() {
   const { address, isConnected } = useAccount();
@@ -128,7 +129,58 @@ function ViewAllIntoContract() {
       </div>
     );
   } else {
-    return "loading";
+    return (
+      <div className="db-sub">
+        <h1>All streams</h1>
+        <p>View all streams in the contract.</p>
+        <div className="subscriber-add-box view-all">
+          {/* <h3>Subscriber Address</h3> */}
+          <table>
+            <thead>
+              <tr>
+                <th>From</th>
+                <th>Flow Rate</th>
+                <th>Start / End Date</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <Skeleton
+                    animation="wave"
+                    variant="rounded"
+                    sx={{ bgcolor: "grey.100" }}
+                  />
+                </td>
+                <td>
+                  <Skeleton
+                    animation="wave"
+                    variant="rounded"
+                    sx={{ bgcolor: "grey.100" }}
+                  />
+                </td>
+                <td>
+                  <Skeleton
+                    animation="wave"
+                    variant="rounded"
+                    sx={{ bgcolor: "grey.100" }}
+                  />
+                </td>
+                <td>
+                  <Skeleton
+                    animation="wave"
+                    variant="rounded"
+                    sx={{ bgcolor: "grey.100" }}
+                  />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          {/* <h3>Unit</h3> */}
+        </div>
+      </div>
+    );
   }
 }
 export default ViewAllIntoContract;

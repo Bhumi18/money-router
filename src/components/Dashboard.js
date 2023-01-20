@@ -7,11 +7,12 @@ import { Framework } from "@superfluid-finance/sdk-core";
 // import { CONTRACT_ADDRESS } from "../config";
 
 import "../styles/dashboard.scss";
-// import { useProvider } from "wagmi";
+import { useProvider } from "wagmi";
 import { ethers } from "ethers";
 
 function Dashboard() {
-  const { isConnected } = useAccount();
+  const provider = useProvider();
+  const { address, isConnected } = useAccount();
   const [loading, setLoading] = useState(false);
   const [tokenBalance, setTokenBalance] = useState();
 
@@ -19,12 +20,6 @@ function Dashboard() {
 
   // const provider = useProvider();
   const { data: signer } = useSigner();
-
-  // const connectedContract = new ethers.Contract(
-  //   CONTRACT_ADDRESS,
-  //   Abi_IDA,
-  //   signer
-  // );
 
   // const AddFunds = async () => {
   //   try {
@@ -39,38 +34,38 @@ function Dashboard() {
   //   }
   // };
 
-  // const getBalance = async () => {
-  //   const sf = await Framework.create({
-  //     chainId: 5,
-  //     provider: provider,
-  //   });
-  //   const daix = await sf.loadSuperToken("fDAIx");
-  //   console.log("fDAIx balance...");
-  //   try {
-  //     const daixBalance = await daix.balanceOf({
-  //       account: connectedContract.address,
-  //       providerOrSigner: signer,
-  //     });
-  //     console.log(daixBalance);
-  //     setTokenBalance(parseFloat(daixBalance / Math.pow(10, 18)).toFixed(5));
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
+  const getBalance = async () => {
+    const sf = await Framework.create({
+      chainId: 5,
+      provider: provider,
+    });
+    const daix = await sf.loadSuperToken("fDAIx");
+    console.log("fDAIx balance...");
+    try {
+      const daixBalance = await daix.balanceOf({
+        account: address,
+        providerOrSigner: signer,
+      });
+      console.log(daixBalance);
+      setTokenBalance(parseFloat(daixBalance / Math.pow(10, 18)).toFixed(5));
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-  // useEffect(() => {
-  //   // getBalance();
-  //   const getFunds = async () => {
-  //     try {
-  //       const tx = await connectedContract.viewAddressStake();
-  //       console.log(tx);
-  //       if (tx) setTokenBalance(parseFloat(tx / Math.pow(10, 18)).toFixed(5));
-  //     } catch (err) {
-  //       console.log(err);
-  //     }
-  //   };
-  //   getFunds();
-  // });
+  useEffect(() => {
+    getBalance();
+    // const getFunds = async () => {
+    //   try {
+    //     const tx = await connectedContract.viewAddressStake();
+    //     console.log(tx);
+    //     if (tx) setTokenBalance(parseFloat(tx / Math.pow(10, 18)).toFixed(5));
+    //   } catch (err) {
+    //     console.log(err);
+    //   }
+    // };
+    // getFunds();
+  });
 
   if (isConnected) {
     return (
@@ -215,7 +210,6 @@ function Dashboard() {
                   </tbody>
                 </table>
               </div>
-              <button className="add-fund-btn">Add 1000 Wei in Contract</button>
             </div>
           </div>
         </div>

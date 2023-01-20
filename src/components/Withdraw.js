@@ -20,6 +20,7 @@ function Withdraw() {
   const [btnContent, setBtnContent] = useState("Withdraw");
 
   const withdraw = async () => {
+    setLoadingAnim(true);
     try {
       const { ethereum } = window;
       if (ethereum) {
@@ -43,24 +44,29 @@ function Withdraw() {
         await moneyRouter
           .connect(signer)
           .withdrawFunds(daix.address, ethers.utils.parseEther(amount))
-          .then(function (tx) {
+          .then(async function (tx) {
+            await tx.wait();
             console.log(`
             Congrats! You've just successfully withdrew funds from the money router contract. 
             Tx Hash: ${tx.hash}
-        `)
-          })
+        `);
+            setBtnContent("Sent");
+            setTimeout(() => {
+              setBtnContent("Withdraw");
+            }, 2000);
+            setLoadingAnim(false);
+          });
       }
     } catch (error) {
       console.log(error);
+      setLoadingAnim(false);
     }
-  }
+  };
 
   return (
     <div className="db-sub">
       <h1>Withdraw Token From Contract</h1>
-      <p>
-      Withdraw tokens from the contract.
-      </p>
+      <p>Withdraw tokens from the contract.</p>
       <div className="subscriber-add-box">
         <FormControl required fullWidth>
           {/* <InputLabel id="demo-simple-select-label">Age</InputLabel> */}
@@ -75,9 +81,9 @@ function Withdraw() {
               fontSize: "1rem",
               padding: "0px 5px",
               ".css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.MuiSelect-select":
-              {
-                minHeight: "auto",
-              },
+                {
+                  minHeight: "auto",
+                },
               ".MuiOutlinedInput-notchedOutline": {
                 borderColor: "rgb(224, 224, 224)",
                 boxShadow: "rgba(204, 204, 204, 0.25) 0px 0px 6px 3px",
@@ -108,7 +114,7 @@ function Withdraw() {
         {/* <h3>Subscriber Address</h3> */}
         <div className="subscriber-input-div">
           <input
-          id="amount"
+            id="amount"
             type="number"
             className="subscriber-input-index"
             placeholder="Amount"

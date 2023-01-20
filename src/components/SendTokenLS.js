@@ -19,6 +19,7 @@ function SendTokenLS() {
   const [btnContent, setBtnContent] = useState("Send Token");
 
   const sendLumpsum = async () => {
+    setLoadingAnim(true);
     try {
       const { ethereum } = window;
       if (ethereum) {
@@ -53,7 +54,9 @@ function SendTokenLS() {
             receiver: moneyRouterAddress,
             amount: ethers.utils.parseEther(String(amountToApprove)),
           });
-          await moneyRouterApproval.exec(signer).then(function (tx) {
+          await moneyRouterApproval.exec(signer).then(async function (tx) {
+            await tx.wait();
+
             console.log(`
                   Congrats! You've just successfully approved the money router contract. 
                   Tx Hash: ${tx.hash}
@@ -61,45 +64,46 @@ function SendTokenLS() {
           });
 
           //call money router send lump sum method from signer
-          await moneyRouter
-            .connect(signer)
-            .sendLumpSumToContract(
-              daix.address,
-              ethers.utils.parseEther(String(amount))
-            )
-            .then(function (tx) {
-              console.log(`
-                Congrats! You just successfully sent funds to the money router contract. 
-                Tx Hash: ${tx.hash}
-            `);
-            });
-        } else {
-          //call money router send lump sum method from signer
-          await moneyRouter
-            .connect(signer)
-            .sendLumpSumToContract(
-              daix.address,
-              ethers.utils.parseEther(String(amount))
-            )
-            .then(function (tx) {
-              console.log(`
-                Congrats! You just successfully sent funds to the money router contract. 
-                Tx Hash: ${tx.hash}
-            `);
-            });
+          // const tx = await moneyRouter
+          //   .connect(signer)
+          //   .sendLumpSumToContract(
+          //     daix.address,
+          //     ethers.utils.parseEther(String(amount))
+          //   )
+          //   .then(function (tx) {
+          //     console.log(`
+          //       Congrats! You just successfully sent funds to the money router contract.
+          //       Tx Hash: ${tx.hash}
+          //   `);
+          //   });
+          // await tx.wait();
+          // setLoadingAnim(false);
         }
+        //call money router send lump sum method from signer
+        const tx = await moneyRouter
+          .connect(signer)
+          .sendLumpSumToContract(
+            daix.address,
+            ethers.utils.parseEther(String(amount))
+          );
+
+        await tx.wait();
+        setBtnContent("Sent");
+        setTimeout(() => {
+          setBtnContent("Send Token");
+        }, 2000);
+        setLoadingAnim(false);
       }
     } catch (error) {
       console.log(error);
+      setLoadingAnim(false);
     }
   };
 
   return (
     <div className="db-sub">
       <h1>Send Token Into Contract</h1>
-      <p>
-      Send a lump-sum amount into the contract.
-      </p>
+      <p>Send a lump-sum amount into the contract.</p>
       <div className="subscriber-add-box">
         <FormControl required fullWidth>
           {/* <InputLabel id="demo-simple-select-label">Age</InputLabel> */}
@@ -114,9 +118,9 @@ function SendTokenLS() {
               fontSize: "1rem",
               padding: "0px 5px",
               ".css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.MuiSelect-select":
-              {
-                minHeight: "auto",
-              },
+                {
+                  minHeight: "auto",
+                },
               ".MuiOutlinedInput-notchedOutline": {
                 borderColor: "rgb(224, 224, 224)",
                 boxShadow: "rgba(204, 204, 204, 0.25) 0px 0px 6px 3px",

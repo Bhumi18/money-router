@@ -4,8 +4,8 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAccount } from "wagmi";
 import { ethers } from "ethers";
 import { Framework } from "@superfluid-finance/sdk-core";
-import MoneyRouterABI from "../artifacts/MoneyRouter.json"
-const moneyRouterAddress = "0x563a2ED0F4c430FD4A94D9C08a3fB08635C23eFE"
+import MoneyRouterABI from "../artifacts/MoneyRouter.json";
+const moneyRouterAddress = "0x563a2ED0F4c430FD4A94D9C08a3fB08635C23eFE";
 
 function CreateFIC() {
   const [indexValue, setIndexValue] = useState("");
@@ -19,6 +19,7 @@ function CreateFIC() {
   const [btnContent, setBtnContent] = useState("Create Flow");
 
   const sendStreamIntoContract = async () => {
+    setLoadingAnim(true);
     try {
       const { ethereum } = window;
       if (ethereum) {
@@ -30,72 +31,67 @@ function CreateFIC() {
           provider: provider,
         });
 
-        const daix = await sf.loadSuperToken("fDAIx")
+        const daix = await sf.loadSuperToken("fDAIx");
         const moneyRouter = new ethers.Contract(
           moneyRouterAddress,
           MoneyRouterABI,
           signer
-        )
+        );
 
         // check permission data
         const isAuthorized = await daix.getFlowOperatorData({
           sender: address,
           flowOperator: moneyRouterAddress,
           token: daix.address,
-          providerOrSigner: signer
-        })
-        const permission = (isAuthorized.permissions)
-        const flow = document.getElementById('flow').value
-        console.log(permission)
-        console.log(typeof permission)
+          providerOrSigner: signer,
+        });
+        const permission = isAuthorized.permissions;
+        const flow = document.getElementById("flow").value;
+        console.log(permission);
+        console.log(typeof permission);
         // condition for authorization
         if (permission === String(0)) {
           //  approve contract to spend 1000 daix
           const aclApproval = daix.updateFlowOperatorPermissions({
             flowOperator: moneyRouterAddress,
             flowRateAllowance: "3858024691358024", //10k tokens per month in flowRateAllowanace
-            permissions: 7 //NOTE: this allows for full create, update, and delete permissions. Change this if you want more granular permissioning
-          })
-          await aclApproval.exec(signer).then(function (tx) {
+            permissions: 7, //NOTE: this allows for full create, update, and delete permissions. Change this if you want more granular permissioning
+          });
+          await aclApproval.exec(signer).then(async function (tx) {
+            await tx.wait();
             console.log(`
             Congrats! You've just successfully made the money router contract a flow operator. 
             Tx Hash: ${tx.hash}
-        `)
-          })
-          await moneyRouter
-            .connect(signer)
-            .createFlowIntoContract(daix.address, flow)
-            .then(function (tx) {
-              console.log(`
-              Congrats! You just successfully created a flow into the money router contract. 
-              Tx Hash: ${tx.hash}
-          `)
-            })
-        } else {
-          // const tx = await moneyRouter.createFlowIntoContract(daix.address, flow)
-          // tx.wait()
-          await moneyRouter
-            .connect(signer)
-            .createFlowIntoContract(daix.address, flow)
-            .then(function (tx) {
-              console.log(`
-              Congrats! You just successfully created a flow into the money router contract. 
-              Tx Hash: ${tx.hash}
-          `)
-            })
+        `);
+          });
         }
-
+        // const tx = await moneyRouter.createFlowIntoContract(daix.address, flow)
+        // tx.wait()
+        await moneyRouter
+          .connect(signer)
+          .createFlowIntoContract(daix.address, flow)
+          .then(async function (tx) {
+            await tx.wait();
+            console.log(`
+              Congrats! You just successfully created a flow into the money router contract. 
+              Tx Hash: ${tx.hash}
+          `);
+            setBtnContent("Flow Started");
+            setTimeout(() => {
+              setBtnContent("Create Flow");
+            }, 2000);
+            setLoadingAnim(false);
+          });
       }
     } catch (error) {
       console.log(error);
+      setLoadingAnim(false);
     }
-  }
+  };
   return (
     <div className="db-sub">
       <h1>Create Flow</h1>
-      <p>
-      Create the flow in the contract.
-      </p>
+      <p>Create the flow in the contract.</p>
       <div className="subscriber-add-box">
         <FormControl required fullWidth>
           {/* <InputLabel id="demo-simple-select-label">Age</InputLabel> */}
@@ -110,9 +106,9 @@ function CreateFIC() {
               fontSize: "1rem",
               padding: "0px 5px",
               ".css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.MuiSelect-select":
-              {
-                minHeight: "auto",
-              },
+                {
+                  minHeight: "auto",
+                },
               ".MuiOutlinedInput-notchedOutline": {
                 borderColor: "rgb(224, 224, 224)",
                 boxShadow: "rgba(204, 204, 204, 0.25) 0px 0px 6px 3px",
@@ -153,7 +149,10 @@ function CreateFIC() {
 
         <div className="subscriber-add-btn">
           {isConnected ? (
-            <button className="action-btn" onClick={() => sendStreamIntoContract()}>
+            <button
+              className="action-btn"
+              onClick={() => sendStreamIntoContract()}
+            >
               {loadingAnim ? <span className="loader"></span> : btnContent}
             </button>
           ) : (

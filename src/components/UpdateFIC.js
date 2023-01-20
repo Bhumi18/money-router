@@ -4,8 +4,8 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAccount } from "wagmi";
 import { ethers } from "ethers";
 import { Framework } from "@superfluid-finance/sdk-core";
-import MoneyRouterABI from "../artifacts/MoneyRouter.json"
-const moneyRouterAddress = "0x563a2ED0F4c430FD4A94D9C08a3fB08635C23eFE"
+import MoneyRouterABI from "../artifacts/MoneyRouter.json";
+const moneyRouterAddress = "0x563a2ED0F4c430FD4A94D9C08a3fB08635C23eFE";
 
 function UpdateFIC() {
   const [indexValue, setIndexValue] = useState("");
@@ -19,6 +19,7 @@ function UpdateFIC() {
   const [btnContent, setBtnContent] = useState("Update Flow");
 
   const updatedFlowIntoContract = async () => {
+    setLoadingAnim(true);
     try {
       const { ethereum } = window;
       if (ethereum) {
@@ -30,38 +31,42 @@ function UpdateFIC() {
           provider: provider,
         });
 
-        const daix = await sf.loadSuperToken("fDAIx")
+        const daix = await sf.loadSuperToken("fDAIx");
         const moneyRouter = new ethers.Contract(
           moneyRouterAddress,
           MoneyRouterABI,
           signer
-        )
+        );
 
-        const flow = document.getElementById('flow').value
+        const flow = document.getElementById("flow").value;
         //call money router create flow into contract method from signer
         //this flow rate is ~2000 tokens/month
         await moneyRouter
           .connect(signer)
           .updateFlowIntoContract(daix.address, flow)
-          .then(function (tx) {
+          .then(async function (tx) {
+            await tx.wait();
             console.log(`
             Congrats! You just successfully updated a flow into the money router contract. 
             Tx Hash: ${tx.hash}
-        `)
-          })
-
+        `);
+            setBtnContent("Flow Updated");
+            setTimeout(() => {
+              setBtnContent("Update Flow");
+            }, 2000);
+            setLoadingAnim(false);
+          });
       }
     } catch (error) {
       console.log(error);
+      setLoadingAnim(false);
     }
-  }
+  };
 
   return (
     <div className="db-sub">
       <h1>Update Flow</h1>
-      <p>
-      Update the flow in the contract.
-      </p>
+      <p>Update the flow in the contract.</p>
       <div className="subscriber-add-box">
         <FormControl required fullWidth>
           {/* <InputLabel id="demo-simple-select-label">Age</InputLabel> */}
@@ -76,9 +81,9 @@ function UpdateFIC() {
               fontSize: "1rem",
               padding: "0px 5px",
               ".css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.MuiSelect-select":
-              {
-                minHeight: "auto",
-              },
+                {
+                  minHeight: "auto",
+                },
               ".MuiOutlinedInput-notchedOutline": {
                 borderColor: "rgb(224, 224, 224)",
                 boxShadow: "rgba(204, 204, 204, 0.25) 0px 0px 6px 3px",
@@ -109,7 +114,7 @@ function UpdateFIC() {
         {/* <h3>Subscriber Address</h3> */}
         <div className="subscriber-input-div">
           <input
-            id='flow'
+            id="flow"
             type="number"
             className="subscriber-input-index"
             placeholder="Flow rate"
@@ -119,7 +124,10 @@ function UpdateFIC() {
 
         <div className="subscriber-add-btn">
           {isConnected ? (
-            <button className="action-btn" onClick={() => updatedFlowIntoContract()}>
+            <button
+              className="action-btn"
+              onClick={() => updatedFlowIntoContract()}
+            >
               {loadingAnim ? <span className="loader"></span> : btnContent}
             </button>
           ) : (
